@@ -90,6 +90,7 @@ input {
   }
 }
 
+/* For screens below 600px: Mobile adjustments */
 @media (max-width: 600px) {
   .form-container {
     width: 90%;
