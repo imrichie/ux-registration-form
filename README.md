@@ -4,7 +4,7 @@ Welcome to the **Delightful Registration Form** project! This form aims to demon
 
 ---
 
-### Project Goals
+## Project Goals
 
 1. **Demonstrate Design for Delight**: Showcase how microinteractions, friendly microcopy, and thoughtful visual feedback can elevate a standard registration experience.
 2. **Implement UX-Focused Details**: Introduce subtle animations, real-time feedback, and engaging interactions to enhance usability and user satisfaction.
@@ -24,6 +24,7 @@ Welcome to the **Delightful Registration Form** project! This form aims to demon
 ---
 
 ### Usage
+
 To explore the registration form, run the project locally by following the installation instructions above. Upon form submission, you’ll see interactive feedback, error handling, and a personalized success message.
 
 ---
