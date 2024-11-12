@@ -1,38 +1,122 @@
-.App {
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  padding: 0 156px;
+  box-sizing: border-box;
+}
+
+/* Style the form container */
+.form-container {
+  width: 42%;
+  max-width: 600px;
+  height: 70vh;
+  background-color: #f7f2fa;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 40px;
+  box-sizing: border-box;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Header */
+.form-header {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--primary-text-color);
+  font-family: var(--font-family);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Sub-title */
+.form-subtitle {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--secondary-text-color);
+  font-family: var(--font-family);
+  margin-bottom: 24px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Input row styles */
+.input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Input group container */
+.input-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: flex-start;
+}
+
+/* Half-width input groups (e.g., First Name and Last Name) */
+.half-width {
+  flex: 1;
+}
+
+/* Full-width input group (e.g., Phone Number) */
+.full-width {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+/* Label styling */
+.input-label {
+  font-size: 0.75rem;
+  color: #5E35B1;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+/* Input field styling */
+.input-field {
+  padding: 12px 16px;
+  font-size: 1rem;
+  color: #202124;
+  background-color: #ECE4F0;
+  border: 1px solid #D1C4E9;
+  outline: none;
+  width: 100%;
+}
+
+/* Placeholder text styling */
+.input-field::placeholder {
+  color: #A59FB0;
+}
+
+/* CTA Button styling */
+.cta-button {
+  width: 100%;
+  height: 56px;
+  background-color: #3949AB;
   color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  margin-top: 16px;
 }
 
-.App-link {
-  color: #61dafb;
+/* Disabled state styling for CTA Button */
+.cta-button:disabled {
+  background-color: #3949AB;
+  opacity: 0.70;
+  cursor: default;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Fine print text styling */
+.fine-print {
+  font-size: 0.75rem;
+  color: #5f6368;
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.4;
+}
+
+/* Styling for bold links in the fine print */
+.fine-print strong {
+  color: #3949AB;
+  font-weight: 500;
 }
