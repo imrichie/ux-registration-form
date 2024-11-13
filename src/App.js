@@ -1,6 +1,25 @@
 import "./assets/App.css";
+import React, { useEffect, useRef } from "react";
 
 function App() {
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  useEffect(() => {
+    if (firstNameRef.current) {
+      firstNameRef.current.focus();
+    }
+  }, []);
+
+  const handleKeyDown = (e, nextFieldRef) => {
+    if (e.key === "Enter" && nextFieldRef && nextFieldRef.current) {
+      nextFieldRef.current.focus();
+    }
+  };
+
   return (
     <div className="app">
       <div className="form-container">
@@ -20,6 +39,8 @@ function App() {
               type="text"
               className="input-field"
               placeholder="John"
+              ref={firstNameRef}
+              onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
             />
           </div>
           <div className="input-group half-width">
@@ -31,6 +52,8 @@ function App() {
               type="text"
               className="input-field"
               placeholder="Smith"
+              ref={lastNameRef}
+              onKeyDown={(e) => handleKeyDown(e, phoneRef)}
             />
           </div>
         </div>
@@ -45,6 +68,8 @@ function App() {
             type="tel"
             className="input-field"
             placeholder="(123) 555-6789"
+            ref={phoneRef}
+            onKeyDown={(e) => handleKeyDown(e, emailRef)}
           />
         </div>
 
@@ -58,6 +83,8 @@ function App() {
             type="email"
             className="input-field"
             placeholder="john.smith@email.com"
+            ref={emailRef}
+            onKeyDown={(e) => handleKeyDown(e, passwordRef)}
           />
         </div>
 
@@ -71,6 +98,7 @@ function App() {
             type="password"
             className="input-field"
             placeholder="••••••••"
+            ref={passwordRef}
           />
         </div>
 

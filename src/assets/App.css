@@ -79,11 +79,20 @@
   border: 1px solid #D1C4E9;
   outline: none;
   width: 100%;
+  transform: scale(1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease-in-out;
 }
 
 /* Placeholder text styling */
 .input-field::placeholder {
   color: #A59FB0;
+}
+
+/* Highlight and scale on focus */
+.input-field:focus {
+  border-color: #3949AB;
+  box-shadow: 0 0 8px rgba(57, 73, 171, 0.5);
+  transform: scale(1.02);
 }
 
 /* CTA Button styling */
