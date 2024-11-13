@@ -145,6 +145,60 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
+/* Password Field */
+.password-input-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  position: relative;
+}
+
+.password-input-wrapper .input-field {
+  display: flex;
+  width: 100%;
+
+}
+
+.visibility-toggle {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.validation-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.validation-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.validation-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #9e9e9e;
+}
+
+.validation-item.valid {
+  color: #4caf50;
+}
+
+.validation-item svg {
+  margin-right: 8px;
+}
+
 /* Optional animation for error message appearance */
 @keyframes fadeIn {
   from {

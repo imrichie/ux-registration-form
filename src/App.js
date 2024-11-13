@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-
+import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
 import "./assets/App.css";
-import { isOnlyLetters, capitalizeFirstLetter } from "./utils/inputValidation";
+import {
+  isOnlyLetters,
+  capitalizeFirstLetter,
+  formatPhoneNumber,
+  isValidEmail,
+} from "./utils/inputValidation";
 
 function App() {
   const firstNameRef = useRef(null);
@@ -13,12 +19,27 @@ function App() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
+    phone: "",
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
+    phone: "",
+    email: "",
+    password: "",
   });
+
+  const [touched, setTouched] = useState({
+    password: false,
+    email: false,
+    phone: false,
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleVisibility = () => setShowPassword(!showPassword);
 
   useEffect(() => {
     if (firstNameRef.current) {
@@ -35,19 +56,44 @@ function App() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Field-specific error messages
-    if (!isOnlyLetters(value)) {
-      const fieldName = name === "firstName" ? "First name" : "Last name";
-      setErrors((prev) => ({
-        ...prev,
-        [name]: `${fieldName} can only contain letters`, // Field-specific message
-      }));
-    } else {
-      setErrors((prev) => ({ ...prev, [name]: "" })); // Clear error if valid
-    }
+    setForm((prev) => {
+      // For phone numbers, apply formatting
+      if (name === "phone") {
+        const formattedPhone = formatPhoneNumber(value); // Format the phone number
+        const digitsOnly = formattedPhone.replace(/\D/g, ""); // Extract digits
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          phone: "", // Clear error while typing
+        }));
+        return { ...prev, phone: formattedPhone };
+      }
 
-    // Update form state with the raw input
-    setForm((prev) => ({ ...prev, [name]: value }));
+      // Validate email on input
+      if (name === "email") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "", // Clear error while typing
+        }));
+        return { ...prev, email: value };
+      }
+
+      // Validate names (First Name, Last Name)
+      if (name === "firstName" || name === "lastName") {
+        if (!isOnlyLetters(value)) {
+          const fieldName = name === "firstName" ? "First name" : "Last name";
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: `${fieldName} can only contain letters`,
+          }));
+        } else {
+          setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); // Clear errors
+        }
+        return { ...prev, [name]: value }; // Update form state
+      }
+
+      // Default update for other fields
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleBlur = (e) => {
@@ -55,7 +101,38 @@ function App() {
 
     const formattedValue = capitalizeFirstLetter(value);
     setForm((prev) => ({ ...prev, [name]: formattedValue }));
+
+    // Phone number validation
+    if (name === "phone") {
+      const digitsOnly = value.replace(/\D/g, ""); // Extract digits
+      setErrors((prev) => ({
+        ...prev,
+        phone: digitsOnly.length === 10 ? "" : "Phone number must be valid", // Show error only if invalid
+      }));
+    }
+
+    // Email validation
+    if (name === "email") {
+      const isValid = isValidEmail(value); // Validate the email format
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: isValid ? "" : "Enter a valid email address", // Show error if invalid
+      }));
+    }
   };
+
+  const passwordCriteria = {
+    isMinLength: form.password.length >= 8,
+    hasUppercase: /[A-Z]/.test(form.password),
+    hasLowercase: /[a-z]/.test(form.password),
+    hasNumber: /[0-9]/.test(form.password),
+  };
+
+  const isPasswordValid =
+    passwordCriteria.isMinLength &&
+    passwordCriteria.hasUppercase &&
+    passwordCriteria.hasLowercase &&
+    passwordCriteria.hasNumber;
 
   return (
     <div className="app">
@@ -116,12 +193,17 @@ function App() {
           </label>
           <input
             id="phone"
+            name="phone"
             type="tel"
-            className="input-field"
-            placeholder="(123) 555-6789"
+            className={`input-field ${errors.phone ? "error" : ""}`}
+            placeholder="(123) 555-5555"
+            value={form.phone}
             ref={phoneRef}
             onKeyDown={(e) => handleKeyDown(e, emailRef)}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
           />
+          {errors.phone && <p className="error-message">{errors.phone}</p>}
         </div>
 
         {/* Row for Email */}
@@ -131,12 +213,17 @@ function App() {
           </label>
           <input
             id="email"
+            name="email"
             type="email"
-            className="input-field"
+            className={`input-field ${errors.email ? "error" : ""}`}
             placeholder="john.smith@email.com"
+            value={form.email}
             ref={emailRef}
             onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
           />
+          {errors.email && <p className="error-message">{errors.email}</p>}
         </div>
 
         {/* Row for Password */}
@@ -144,13 +231,80 @@ function App() {
           <label className="input-label" htmlFor="password">
             Password
           </label>
-          <input
-            id="password"
-            type="password"
-            className="input-field"
-            placeholder="••••••••"
-            ref={passwordRef}
-          />
+          <div className="password-input-wrapper">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              className={`input-field ${
+                touched.password && !isPasswordValid ? "error" : ""
+              }`}
+              placeholder="Enter a strong password"
+              value={form.password}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, password: e.target.value }))
+              }
+              onFocus={() =>
+                setTouched((prev) => ({ ...prev, password: true }))
+              }
+              onBlur={(e) => {
+                if (!e.target.value) {
+                  setTouched((prev) => ({ ...prev, password: false }));
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="visibility-toggle"
+              onClick={toggleVisibility}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <MdOutlineVisibilityOff size={16} />
+              ) : (
+                <MdOutlineVisibility size={16} />
+              )}
+            </button>
+          </div>
+
+          {/* Validation Feedback */}
+          <div className="validation-container">
+            <div className="validation-column">
+              <p
+                className={`validation-item ${
+                  passwordCriteria.isMinLength ? "valid" : ""
+                }`}
+              >
+                <FaCheckCircle />8 characters
+              </p>
+              <p
+                className={`validation-item ${
+                  passwordCriteria.hasUppercase ? "valid" : ""
+                }`}
+              >
+                <FaCheckCircle />
+                Uppercase letter
+              </p>
+            </div>
+            <div className="validation-column">
+              <p
+                className={`validation-item ${
+                  passwordCriteria.hasLowercase ? "valid" : ""
+                }`}
+              >
+                <FaCheckCircle />
+                Lowercase letter
+              </p>
+              <p
+                className={`validation-item ${
+                  passwordCriteria.hasNumber ? "valid" : ""
+                }`}
+              >
+                <FaCheckCircle />
+                Number
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Sign Up Button */}
