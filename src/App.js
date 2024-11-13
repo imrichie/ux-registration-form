@@ -1,5 +1,7 @@
+import React, { useState, useEffect, useRef } from "react";
+
 import "./assets/App.css";
-import React, { useEffect, useRef } from "react";
+import { isOnlyLetters, capitalizeFirstLetter } from "./utils/inputValidation";
 
 function App() {
   const firstNameRef = useRef(null);
@@ -7,6 +9,16 @@ function App() {
   const phoneRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+  });
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+  });
 
   useEffect(() => {
     if (firstNameRef.current) {
@@ -18,6 +30,31 @@ function App() {
     if (e.key === "Enter" && nextFieldRef && nextFieldRef.current) {
       nextFieldRef.current.focus();
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Field-specific error messages
+    if (!isOnlyLetters(value)) {
+      const fieldName = name === "firstName" ? "First name" : "Last name";
+      setErrors((prev) => ({
+        ...prev,
+        [name]: `${fieldName} can only contain letters`, // Field-specific message
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: "" })); // Clear error if valid
+    }
+
+    // Update form state with the raw input
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    const formattedValue = capitalizeFirstLetter(value);
+    setForm((prev) => ({ ...prev, [name]: formattedValue }));
   };
 
   return (
@@ -36,12 +73,19 @@ function App() {
             </label>
             <input
               id="firstName"
+              name="firstName"
               type="text"
-              className="input-field"
+              className={`input-field ${errors.firstName ? "error" : ""}`}
               placeholder="John"
+              value={form.firstName}
               ref={firstNameRef}
               onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
             />
+            {errors.firstName && (
+              <p className="error-message">{errors.firstName}</p>
+            )}
           </div>
           <div className="input-group half-width">
             <label className="input-label" htmlFor="lastName">
@@ -49,12 +93,19 @@ function App() {
             </label>
             <input
               id="lastName"
+              name="lastName"
               type="text"
-              className="input-field"
+              className={`input-field ${errors.lastName ? "error" : ""}`}
               placeholder="Smith"
+              value={form.lastName}
               ref={lastNameRef}
               onKeyDown={(e) => handleKeyDown(e, phoneRef)}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
             />
+            {errors.lastName && (
+              <p className="error-message">{errors.lastName}</p>
+            )}
           </div>
         </div>
 

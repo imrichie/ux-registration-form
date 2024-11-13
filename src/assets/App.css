@@ -130,6 +130,34 @@
   font-weight: 500;
 }
 
+/* Error state styling for input fields */
+.input-field.error {
+  border-color: #B00020;
+  box-shadow: 0 0 8px rgba(211, 47, 47, 0.5);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Error message styling */
+.error-message {
+  color: #B00020;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Optional animation for error message appearance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Single-column layout for screens 1024px and below */
 @media (max-width: 1024px) {
   .form-container {
