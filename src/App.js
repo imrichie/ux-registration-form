@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
-import "./assets/App.css";
+import ConfirmationModal from "./components/ConfirmationModal";
+import "./styles/App.css";
 import {
   isOnlyLetters,
   capitalizeFirstLetter,
@@ -36,12 +37,15 @@ function App() {
   });
 
   const [touched, setTouched] = useState({
-    password: false,
-    email: false,
+    firstName: false,
+    lastName: false,
     phone: false,
+    email: false,
+    password: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   // effect to focus on the first name input field
   useEffect(() => {
@@ -129,6 +133,35 @@ function App() {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (allFieldsValid) {
+      setModalOpen(true); // Open modal
+      setForm({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        password: "",
+      }); // Reset form values
+      setErrors({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        password: "",
+      }); // Reset errors
+      setTouched({
+        password: false,
+      }); // Reset touched state
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false); // Close the modal
+  };
+
   // object for password criteria
   const passwordCriteria = {
     isMinLength: form.password.length >= 8,
@@ -161,7 +194,7 @@ function App() {
 
   return (
     <div className="app">
-      <div className="form-container">
+      <form className="form-container" onSubmit={handleSubmit}>
         <h1 className="form-header">Welcome! Let’s get you set up.</h1>
         <p className="form-subtitle">
           Just a few details to create your account.
@@ -336,6 +369,7 @@ function App() {
         <button
           className={`cta-button ${allFieldsValid ? "enabled" : ""}`}
           disabled={!allFieldsValid}
+          type="submit"
         >
           Sign Up
         </button>
@@ -345,7 +379,9 @@ function App() {
           We respect your privacy. By <strong>signing up</strong>, you agree to
           our <strong>Terms</strong> and <strong>Privacy Policy</strong>.
         </p>
-      </div>
+      </form>
+      {/* Confirmation modal */}
+      <ConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 }
