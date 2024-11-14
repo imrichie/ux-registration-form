@@ -1,0 +1,43 @@
+.form-header {
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    font-family: var(--font-family);
+}
+
+.form-subtitle {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: var(--secondary-text-color);
+    font-family: var(--font-family);
+    margin-bottom: 24px;
+}
+
+/* Adjust header text sizes for different screens */
+@media (max-width: 1024px) {
+    .form-header {
+        font-size: 1.5rem;
+    }
+
+    .form-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1200px) {
+    .form-header {
+        font-size: 1.875rem;
+        text-align: center;
+    }
+
+    .form-subtitle {
+        font-size: 1.125rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .form-header {
+        font-size: 2rem;
+        text-align: center;
+    }
+}

@@ -1,0 +1,12 @@
+.fine-print {
+    font-size: 0.75rem;
+    color: #5f6368;
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.4;
+}
+
+.fine-print strong {
+    color: #3949ab;
+    font-weight: 500;
+}

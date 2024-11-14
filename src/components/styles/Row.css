@@ -1,0 +1,20 @@
+/* Row styles */
+.input-row {
+    display: flex;
+    gap: 16px;
+    /* Space between elements in the row */
+    margin-bottom: 24px;
+    /* Space between rows */
+}
+
+/* Split rows: Two elements side by side */
+.input-row.split .half-width {
+    flex: 1;
+    /* Ensures both items take equal space */
+}
+
+/* Full-width rows: One element spans the row */
+.input-row.full .full-width {
+    flex: 1;
+    /* Ensures the single element takes full width */
+}

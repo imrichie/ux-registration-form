@@ -1,9 +1,18 @@
-// imports
+/* COMPONENTS IMPORTS */
 import React, { useState, useEffect, useRef } from "react";
-import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
-import { FaCheckCircle } from "react-icons/fa";
+import Header from "./components/Header";
+import InputField from "./components/InputField";
+import PasswordField from "./components/PasswordField";
+import SignUpButton from "./components/SignUpButton";
+import FinePrint from "./components/FinePrint";
 import ConfirmationModal from "./components/ConfirmationModal";
+import Row from "./components/Row";
+
+/* STYLES IMPORTS */
 import "./styles/App.css";
+import "./styles/FormContainer.css";
+
+/* UTILS IMPORTS */
 import {
   isOnlyLetters,
   capitalizeFirstLetter,
@@ -11,65 +20,49 @@ import {
   isValidEmail,
 } from "./utils/inputValidation";
 
+import {
+  initializeFormState,
+  initializeErrorState,
+  initializeTouchedState,
+  resetFormState,
+} from "./utils/formUtils";
+
+import { handleKeyDown } from "./utils/keydownUtils";
+
+/* INITIAL FORM STATE */
+const initialFormState = {
+  firstName: "",
+  lastName: "",
+  phone: "",
+  email: "",
+  password: "",
+};
+
+/* APP COMPONENT */
 function App() {
-  // refs for input fields
+  /* REFS */
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
   const phoneRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
-  // state for form values, errors, and touched fields
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-
-  const [touched, setTouched] = useState({
-    firstName: false,
-    lastName: false,
-    phone: false,
-    email: false,
-    password: false,
-  });
-
+  /* STATE */
+  const [form, setForm] = useState(initializeFormState(initialFormState));
+  const [errors, setErrors] = useState(initializeErrorState(initialFormState));
+  const [touched, setTouched] = useState(
+    initializeTouchedState(initialFormState)
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  // effect to focus on the first name input field
-  useEffect(() => {
-    if (firstNameRef.current) {
-      firstNameRef.current.focus();
-    }
-  }, []);
-
-  // Function to handle keydown events and focus on the next field
-  const handleKeyDown = (e, nextFieldRef) => {
-    if (e.key === "Enter" && nextFieldRef && nextFieldRef.current) {
-      nextFieldRef.current.focus();
-    }
-  };
-
-  // Function to toggle password visibility
+  /* HANDLERS */
   const toggleVisibility = () => setShowPassword(!showPassword);
 
-  // Function to validate the input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     setForm((prev) => {
-      // validate phone number on input
       if (name === "phone") {
         const formattedPhone = formatPhoneNumber(value);
         setErrors((prevErrors) => ({
@@ -79,7 +72,6 @@ function App() {
         return { ...prev, phone: formattedPhone };
       }
 
-      // validate email on input
       if (name === "email") {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -88,9 +80,8 @@ function App() {
         return { ...prev, email: value };
       }
 
-      // validate name input fields
       if (name === "firstName" || name === "lastName") {
-        const trimmedValue = value.replace(/\s/g, ""); // Remove all spaces
+        const trimmedValue = value.replace(/\s/g, "");
         if (!isOnlyLetters(trimmedValue)) {
           const fieldName = name === "firstName" ? "First name" : "Last name";
           setErrors((prevErrors) => ({
@@ -98,38 +89,38 @@ function App() {
             [name]: `${fieldName} can only contain letters`,
           }));
         } else {
-          setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); // Clear errors
+          setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
         }
         return { ...prev, [name]: trimmedValue };
       }
-      // Default update for other fields
+
       return { ...prev, [name]: value };
     });
   };
 
-  // function to handle error state
   const handleBlur = (e) => {
     const { name, value } = e.target;
 
-    const formattedValue = capitalizeFirstLetter(value);
-    setForm((prev) => ({ ...prev, [name]: formattedValue }));
-
-    // Phone number validation
     if (name === "phone") {
       const digitsOnly = value.replace(/\D/g, "");
-      setErrors((prev) => ({
-        ...prev,
-        phone: digitsOnly.length === 10 ? "" : "Phone number must be valid",
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phone:
+          value && digitsOnly.length !== 10 ? "Phone number must be valid" : "",
       }));
     }
 
-    // Email validation
     if (name === "email") {
-      const isValid = isValidEmail(value); // Validate the email format
+      const isValid = isValidEmail(value);
       setErrors((prevErrors) => ({
         ...prevErrors,
-        email: isValid ? "" : "Enter a valid email address",
+        email: value && !isValid ? "Enter a valid email address" : "",
       }));
+    }
+
+    if (name === "firstName" || name === "lastName") {
+      const formattedValue = capitalizeFirstLetter(value);
+      setForm((prev) => ({ ...prev, [name]: formattedValue }));
     }
   };
 
@@ -137,32 +128,14 @@ function App() {
     e.preventDefault();
 
     if (allFieldsValid) {
-      setModalOpen(true); // Open modal
-      setForm({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        password: "",
-      }); // Reset form values
-      setErrors({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        password: "",
-      }); // Reset errors
-      setTouched({
-        password: false,
-      }); // Reset touched state
+      setModalOpen(true);
+      resetFormState(setForm, setErrors, setTouched, initialFormState);
     }
   };
 
-  const closeModal = () => {
-    setModalOpen(false); // Close the modal
-  };
+  const closeModal = () => setModalOpen(false);
 
-  // object for password criteria
+  /* COMPUTED VALUES */
   const passwordCriteria = {
     isMinLength: form.password.length >= 8,
     hasUppercase: /[A-Z]/.test(form.password),
@@ -170,217 +143,112 @@ function App() {
     hasNumber: /[0-9]/.test(form.password),
   };
 
-  // boolean to check if password is valid
   const isPasswordValid =
     passwordCriteria.isMinLength &&
     passwordCriteria.hasUppercase &&
     passwordCriteria.hasLowercase &&
     passwordCriteria.hasNumber;
 
-  // boolean to check if all fields are valid
   const allFieldsValid =
     form.firstName &&
     form.lastName &&
     isValidEmail(form.email) &&
     form.phone.replace(/\D/g, "").length === 10 &&
-    passwordCriteria.isMinLength &&
-    passwordCriteria.hasUppercase &&
-    passwordCriteria.hasLowercase &&
-    passwordCriteria.hasNumber &&
-    !errors.firstName &&
-    !errors.lastName &&
-    !errors.email &&
-    !errors.phone;
+    isPasswordValid &&
+    !Object.values(errors).some((error) => error);
 
+  /* EFFECTS */
+  useEffect(() => {
+    if (firstNameRef.current) {
+      firstNameRef.current.focus();
+    }
+  }, []);
+
+  /* RENDER */
   return (
     <div className="app">
       <form className="form-container" onSubmit={handleSubmit}>
-        <h1 className="form-header">Welcome! Let’s get you set up.</h1>
-        <p className="form-subtitle">
-          Just a few details to create your account.
-        </p>
+        <Header />
+        <Row isSplit>
+          <InputField
+            id="firstName"
+            name="First Name"
+            type="text"
+            placeholder="John"
+            value={form.firstName}
+            ref={firstNameRef}
+            onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            error={errors.firstName}
+          />
 
-        {/* Row for First Name and Last Name */}
-        <div className="input-row">
-          <div className="input-group half-width">
-            <label className="input-label" htmlFor="firstName">
-              First Name
-            </label>
-            <input
-              id="firstName"
-              name="firstName"
-              type="text"
-              className={`input-field ${errors.firstName ? "error" : ""}`}
-              placeholder="John"
-              value={form.firstName}
-              ref={firstNameRef}
-              onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-            />
-            {errors.firstName && (
-              <p className="error-message">{errors.firstName}</p>
-            )}
-          </div>
-          <div className="input-group half-width">
-            <label className="input-label" htmlFor="lastName">
-              Last Name
-            </label>
-            <input
-              id="lastName"
-              name="lastName"
-              type="text"
-              className={`input-field ${errors.lastName ? "error" : ""}`}
-              placeholder="Smith"
-              value={form.lastName}
-              ref={lastNameRef}
-              onKeyDown={(e) => handleKeyDown(e, phoneRef)}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-            />
-            {errors.lastName && (
-              <p className="error-message">{errors.lastName}</p>
-            )}
-          </div>
-        </div>
+          <InputField
+            id="lastName"
+            name="Last Name"
+            type="text"
+            placeholder="Smith"
+            value={form.lastName}
+            ref={lastNameRef}
+            onKeyDown={(e) => handleKeyDown(e, phoneRef)}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            error={errors.lastName}
+          />
+        </Row>
 
-        {/* Row for Phone Number */}
-        <div className="input-group full-width">
-          <label className="input-label" htmlFor="phone">
-            Phone Number
-          </label>
-          <input
+        <Row>
+          <InputField
             id="phone"
-            name="phone"
+            name="Phone Number"
             type="tel"
-            className={`input-field ${errors.phone ? "error" : ""}`}
             placeholder="(123) 555-5555"
             value={form.phone}
             ref={phoneRef}
             onKeyDown={(e) => handleKeyDown(e, emailRef)}
             onChange={handleInputChange}
             onBlur={handleBlur}
+            error={errors.phone}
           />
-          {errors.phone && <p className="error-message">{errors.phone}</p>}
-        </div>
-
-        {/* Row for Email */}
-        <div className="input-group full-width">
-          <label className="input-label" htmlFor="email">
-            Email
-          </label>
-          <input
+        </Row>
+        <Row>
+          <InputField
             id="email"
-            name="email"
+            name="Email"
             type="email"
-            className={`input-field ${errors.email ? "error" : ""}`}
             placeholder="john.smith@email.com"
             value={form.email}
             ref={emailRef}
             onKeyDown={(e) => handleKeyDown(e, passwordRef)}
             onChange={handleInputChange}
             onBlur={handleBlur}
+            error={errors.email}
           />
-          {errors.email && <p className="error-message">{errors.email}</p>}
-        </div>
-
-        {/* Row for Password */}
-        <div className="input-group full-width">
-          <label className="input-label" htmlFor="password">
-            Password
-          </label>
-          <div className="password-input-wrapper">
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              className={`input-field ${
-                touched.password && !isPasswordValid ? "error" : ""
-              }`}
-              placeholder="Enter a strong password"
-              value={form.password}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, password: e.target.value }))
+        </Row>
+        <Row>
+          <PasswordField
+            value={form.password}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, password: e.target.value }))
+            }
+            onFocus={() => setTouched((prev) => ({ ...prev, password: true }))}
+            onBlur={(e) => {
+              if (!e.target.value) {
+                setTouched((prev) => ({ ...prev, password: false }));
               }
-              onFocus={() =>
-                setTouched((prev) => ({ ...prev, password: true }))
-              }
-              onBlur={(e) => {
-                if (!e.target.value) {
-                  setTouched((prev) => ({ ...prev, password: false }));
-                }
-              }}
-            />
-            <button
-              type="button"
-              className="visibility-toggle"
-              onClick={toggleVisibility}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <MdOutlineVisibilityOff size={16} />
-              ) : (
-                <MdOutlineVisibility size={16} />
-              )}
-            </button>
-          </div>
+            }}
+            showPassword={showPassword}
+            toggleVisibility={toggleVisibility}
+            passwordCriteria={passwordCriteria}
+            touched={touched.password}
+          />
+        </Row>
 
-          {/* Validation Feedback */}
-          <div className="validation-container">
-            <div className="validation-column">
-              <p
-                className={`validation-item ${
-                  passwordCriteria.isMinLength ? "valid" : ""
-                }`}
-              >
-                <FaCheckCircle />8 characters
-              </p>
-              <p
-                className={`validation-item ${
-                  passwordCriteria.hasUppercase ? "valid" : ""
-                }`}
-              >
-                <FaCheckCircle />
-                Uppercase letter
-              </p>
-            </div>
-            <div className="validation-column">
-              <p
-                className={`validation-item ${
-                  passwordCriteria.hasLowercase ? "valid" : ""
-                }`}
-              >
-                <FaCheckCircle />
-                Lowercase letter
-              </p>
-              <p
-                className={`validation-item ${
-                  passwordCriteria.hasNumber ? "valid" : ""
-                }`}
-              >
-                <FaCheckCircle />
-                Number
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Sign Up Button */}
-        <button
-          className={`cta-button ${allFieldsValid ? "enabled" : ""}`}
-          disabled={!allFieldsValid}
-          type="submit"
-        >
-          Sign Up
-        </button>
-
-        {/* Fine Print Text */}
-        <p className="fine-print">
-          We respect your privacy. By <strong>signing up</strong>, you agree to
-          our <strong>Terms</strong> and <strong>Privacy Policy</strong>.
-        </p>
+        <Row>
+          <SignUpButton disabled={!allFieldsValid} />
+        </Row>
+        <FinePrint />
       </form>
-      {/* Confirmation modal */}
       <ConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
