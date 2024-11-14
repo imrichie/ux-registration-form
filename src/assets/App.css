@@ -95,24 +95,31 @@
   transform: scale(1.02);
 }
 
-/* CTA Button styling */
+/* Default styling for the button */
 .cta-button {
   width: 100%;
   height: 56px;
-  background-color: #3949AB;
+  background-color: #c3c3c3;
   color: white;
   font-size: 1rem;
   font-weight: 500;
   border: none;
-  cursor: pointer;
-  margin-top: 16px;
+  cursor: default;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  transform: scale(1);
 }
 
-/* Disabled state styling for CTA Button */
-.cta-button:disabled {
-  background-color: #3949AB;
-  opacity: 0.70;
-  cursor: default;
+/* Styling for the enabled state */
+.cta-button.enabled {
+  background-color: #3949ab;
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+/* Optional hover effect for the enabled state */
+.cta-button.enabled:hover {
+  transform: scale(1.1);
+  /* Slightly larger on hover */
 }
 
 /* Fine print text styling */

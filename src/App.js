@@ -1,3 +1,4 @@
+// imports
 import React, { useState, useEffect, useRef } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
@@ -10,12 +11,14 @@ import {
 } from "./utils/inputValidation";
 
 function App() {
+  // refs for input fields
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
   const phoneRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
+  // state for form values, errors, and touched fields
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -39,47 +42,52 @@ function App() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const toggleVisibility = () => setShowPassword(!showPassword);
 
+  // effect to focus on the first name input field
   useEffect(() => {
     if (firstNameRef.current) {
       firstNameRef.current.focus();
     }
   }, []);
 
+  // Function to handle keydown events and focus on the next field
   const handleKeyDown = (e, nextFieldRef) => {
     if (e.key === "Enter" && nextFieldRef && nextFieldRef.current) {
       nextFieldRef.current.focus();
     }
   };
 
+  // Function to toggle password visibility
+  const toggleVisibility = () => setShowPassword(!showPassword);
+
+  // Function to validate the input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     setForm((prev) => {
-      // For phone numbers, apply formatting
+      // validate phone number on input
       if (name === "phone") {
-        const formattedPhone = formatPhoneNumber(value); // Format the phone number
-        const digitsOnly = formattedPhone.replace(/\D/g, ""); // Extract digits
+        const formattedPhone = formatPhoneNumber(value);
         setErrors((prevErrors) => ({
           ...prevErrors,
-          phone: "", // Clear error while typing
+          phone: "",
         }));
         return { ...prev, phone: formattedPhone };
       }
 
-      // Validate email on input
+      // validate email on input
       if (name === "email") {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          email: "", // Clear error while typing
+          email: "",
         }));
         return { ...prev, email: value };
       }
 
-      // Validate names (First Name, Last Name)
+      // validate name input fields
       if (name === "firstName" || name === "lastName") {
-        if (!isOnlyLetters(value)) {
+        const trimmedValue = value.replace(/\s/g, ""); // Remove all spaces
+        if (!isOnlyLetters(trimmedValue)) {
           const fieldName = name === "firstName" ? "First name" : "Last name";
           setErrors((prevErrors) => ({
             ...prevErrors,
@@ -88,14 +96,14 @@ function App() {
         } else {
           setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); // Clear errors
         }
-        return { ...prev, [name]: value }; // Update form state
+        return { ...prev, [name]: trimmedValue };
       }
-
       // Default update for other fields
       return { ...prev, [name]: value };
     });
   };
 
+  // function to handle error state
   const handleBlur = (e) => {
     const { name, value } = e.target;
 
@@ -104,10 +112,10 @@ function App() {
 
     // Phone number validation
     if (name === "phone") {
-      const digitsOnly = value.replace(/\D/g, ""); // Extract digits
+      const digitsOnly = value.replace(/\D/g, "");
       setErrors((prev) => ({
         ...prev,
-        phone: digitsOnly.length === 10 ? "" : "Phone number must be valid", // Show error only if invalid
+        phone: digitsOnly.length === 10 ? "" : "Phone number must be valid",
       }));
     }
 
@@ -116,11 +124,12 @@ function App() {
       const isValid = isValidEmail(value); // Validate the email format
       setErrors((prevErrors) => ({
         ...prevErrors,
-        email: isValid ? "" : "Enter a valid email address", // Show error if invalid
+        email: isValid ? "" : "Enter a valid email address",
       }));
     }
   };
 
+  // object for password criteria
   const passwordCriteria = {
     isMinLength: form.password.length >= 8,
     hasUppercase: /[A-Z]/.test(form.password),
@@ -128,11 +137,27 @@ function App() {
     hasNumber: /[0-9]/.test(form.password),
   };
 
+  // boolean to check if password is valid
   const isPasswordValid =
     passwordCriteria.isMinLength &&
     passwordCriteria.hasUppercase &&
     passwordCriteria.hasLowercase &&
     passwordCriteria.hasNumber;
+
+  // boolean to check if all fields are valid
+  const allFieldsValid =
+    form.firstName &&
+    form.lastName &&
+    isValidEmail(form.email) &&
+    form.phone.replace(/\D/g, "").length === 10 &&
+    passwordCriteria.isMinLength &&
+    passwordCriteria.hasUppercase &&
+    passwordCriteria.hasLowercase &&
+    passwordCriteria.hasNumber &&
+    !errors.firstName &&
+    !errors.lastName &&
+    !errors.email &&
+    !errors.phone;
 
   return (
     <div className="app">
@@ -308,7 +333,10 @@ function App() {
         </div>
 
         {/* Sign Up Button */}
-        <button className="cta-button" disabled>
+        <button
+          className={`cta-button ${allFieldsValid ? "enabled" : ""}`}
+          disabled={!allFieldsValid}
+        >
           Sign Up
         </button>
 
