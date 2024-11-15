@@ -8,13 +8,31 @@
 }
 
 /* Split rows: Two elements side by side */
-.input-row.split .half-width {
+.input-row.split>* {
     flex: 1;
     /* Ensures both items take equal space */
 }
 
 /* Full-width rows: One element spans the row */
-.input-row.full .full-width {
-    flex: 1;
+.input-row.full>* {
+    width: 100%;
     /* Ensures the single element takes full width */
+}
+
+/* For screens below 1024px: Collapse to full width */
+@media (max-width: 1024px) {
+    .input-row {
+        flex-direction: column;
+        /* Stack items vertically */
+    }
+
+    .input-row.split .half-width {
+        width: 100%;
+        /* Each input takes full width */
+    }
+
+    .input-row.full .full-width {
+        width: 100%;
+        /* Already spans full width */
+    }
 }

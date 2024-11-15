@@ -1,43 +1,40 @@
+/* General styles for the header */
 .form-header {
-    font-size: 2rem;
     font-weight: 500;
     color: var(--primary-text-color);
     font-family: var(--font-family);
+    text-align: center;
+    /* Center aligns universally */
+    font-size: 1.75rem;
+    /* Default size for medium screens and above */
 }
 
 .form-subtitle {
-    font-size: 1.125rem;
+    font-size: 1rem;
+    /* Default size for medium screens and above */
     font-weight: 400;
     color: var(--secondary-text-color);
     font-family: var(--font-family);
     margin-bottom: 24px;
 }
 
-/* Adjust header text sizes for different screens */
+/* Adjust text sizes for smaller screens (below 1024px) */
 @media (max-width: 1024px) {
     .form-header {
+        font-size: 1.625rem;
+        /* Slightly smaller for tablets and small laptops */
+    }
+}
+
+/* Adjust text sizes for small smartphones (below 480px) */
+@media (max-width: 480px) {
+    .form-header {
         font-size: 1.5rem;
+        /* Smaller size for compact screens */
     }
 
     .form-subtitle {
-        font-size: 1rem;
-    }
-}
-
-@media (min-width: 1024px) and (max-width: 1200px) {
-    .form-header {
-        font-size: 1.875rem;
-        text-align: center;
-    }
-
-    .form-subtitle {
-        font-size: 1.125rem;
-    }
-}
-
-@media (min-width: 1200px) {
-    .form-header {
-        font-size: 2rem;
-        text-align: center;
+        font-size: 0.875rem;
+        /* Smaller size for compact screens */
     }
 }

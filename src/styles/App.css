@@ -5,6 +5,5 @@
   align-items: center;
   min-height: 100vh;
   background-color: var(--background-color);
-  padding: 0 156px;
   box-sizing: border-box;
 }
