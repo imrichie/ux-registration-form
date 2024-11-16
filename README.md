@@ -26,9 +26,9 @@
 
 ### Technologies Used
 
-- **React**: Component-based architecture for maintainability and scalability.
-- **CSS**: Handled styling, animations, and responsiveness with modern techniques like flexbox and media queries.
-- **Modern JavaScript (ES6+)**: Clean, readable code using destructuring, template literals, and other modern syntax.
+- **React.js**: Component-based architecture for maintainability and scalability.
+- **CSS3**: Handled styling, animations, and responsiveness with modern techniques like flexbox and media queries.
+- **JavaScript (ES6+)**: Clean, readable code using destructuring, template literals, and other modern syntax.
 - **State Management with Hooks**: Managed form states using `useState` and `useEffect`, to provide seamless interactivity.
 - **Figma**: Wireframed and iterated designs in Figma to ensure a user-first approach.
 
@@ -42,4 +42,4 @@ Through this form, I aimed to highlight the balance between clean design, techni
 
 ### Explore the Form
 
-Test out the registration form here:
+[Interact with the registration form project here](https://uxregistrationform.netlify.app/)
